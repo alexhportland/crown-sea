@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Crown Estate: Seabed Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+        :root {
+            --tce-deep-blue: #002B5C;
+            --tce-bright-blue: #00A9CE;
+            --tce-purple: #6A2E83;
+            --tce-gold: #FDB913;
+            --tce-green: #5C946E;
+            --tce-sand: #F4EED7;
+            --background: #E0F7FA;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-family: "Archivo", sans-serif;
+            background-color: var(--background);
+            background-image: url(https://aspectsurveys.com/wp-content/uploads/2017/05/seabed.jpg);
+            background-size: cover;
+            color: var(--tce-deep-blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            text-align: center;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(6px);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--tce-bright-blue);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        
+        header .logo img {
+            height: 85px;
+            width: auto;
+        }
+
+        header h1 {
+            font-size: 28px;
+            color: var(--tce-deep-blue);
+            text-align: right;
+        }
+
+        #hud {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 24px;
+            background-color: rgba(244, 238, 215, 0.8);
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        #biodiversity-bar, #sustainability-bar {
+            width: 100px;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--tce-deep-blue);
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 50%; /* JS will update this */
+            transition: width 0.5s ease-in-out;
+        }
+
+        #biodiversity-bar .bar-fill { background-color: var(--tce-green); }
+        #sustainability-bar .bar-fill { background-color: var(--tce-bright-blue); }
+
+        #seabed-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            background-image: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxAPDxAPDxAQDxAPEA8QDw8QEBAQEA8PFRIWFhUVFRUYHSggGBolHRUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDQ0NDg0NGisZFRkrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIALEBHAMBIgACEQEDEQH/xAAZAAEBAQEBAQAAAAAAAAAAAAAAAQIDBAf/xAAaEAEBAQEBAQEAAAAAAAAAAAAAAQIRAyEx/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwQG/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAAR/9oADAMBAAIRAxEAPwD50EBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE/9tAEAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE/pacyBERAST/2gAIAQEDEQE/AIGCwaYDBgYDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGgwaDBoMGg-yoAAAA//Z");
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--tce-deep-blue);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 24px;
+        }
+
+        .zone {
+            aspect-ratio: 1 / 1;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(1px);
+        }
+
+        .zone:hover {
+            border-style: solid;
+            border-color: var(--tce-gold);
+            transform: scale(1.05);
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .zone.wind { background-color: rgba(224, 247, 250, 0.7); }
+        .zone.fishing { background-color: rgba(255, 242, 214, 0.7); }
+        .zone.conservation { background-color: rgba(214, 245, 227, 0.7); }
+        
+        .zone svg {
+            width: 70%;
+            height: 70%;
+            pointer-events: none;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+        }
+
+        #next-year-btn {
+            background-color: var(--tce-deep-blue);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        #next-year-btn:hover {
+            background-color: var(--tce-bright-blue);
+        }
+
+        footer {
+            margin-top: 24px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        footer a {
+            color: var(--tce-deep-blue);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        #action-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #action-modal.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        #action-modal.visible .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: var(--tce-deep-blue);
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-actions button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid var(--tce-sand);
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--tce-deep-blue);
+        }
+
+        .modal-actions button:hover {
+            border-color: var(--tce-gold);
+            background-color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .modal-actions button svg {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
+        }
+        
+        .action-cost {
+            display: block;
+            font-size: 10px;
+            font-weight: normal;
+            margin-top: 4px;
+            color: #555;
+        }
+
+        #close-modal-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+        
+        #close-modal-btn:hover {
+            color: var(--tce-deep-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <header>
+            <div class="logo">
+                <img src="https://cdn.prod.website-files.com/5ab25784c7fcbff004fa8dca/672cb1f585161e694329cbe2_5fa2e7448a4af798f1e0653b_The_Crown_Estate_logo_black.png" alt="the crown estate">
+                
+            </div>
+            <h1>Seabed Manager</h1>
+        </header>
+
+        <div id="hud">
+            <div class="stat">
+                <span class="stat-label">Treasury Contribution</span>
+                <span class="stat-value" id="income-display">£0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Biodiversity</span>
+                <div id="biodiversity-bar"><div class="bar-fill"></div></div>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Sustainability</span>
+                <div id="sustainability-bar"><div class="bar-fill"></div></div>
+            </div>
+        </div>
+        
+        <p style="margin-bottom: 20px; font-size: 14px; color: #555;">Welcome, Parliamentarian. Your task is to manage the UK seabed. Lease zones for different activities and see their impact on the nation's finances and environment. Click a zone to begin.</p>
+
+        <div id="seabed-grid"></div>
+
+        <button id="next-year-btn">Advance to Next Year</button>
+
+        <footer>
+            <p>A simplified demonstration inspired by the marine management work of <a href="https://www.thecrownestate.co.uk/our-business/marine/" target="_blank">The Crown Estate</a>.</p>
+        </footer>
+    </div>
+
+    <div id="action-modal">
+        <div class="modal-content">
+            <button id="close-modal-btn">&times;</button>
+            <h2 id="modal-title">Manage Zone</h2>
+            <div class="modal-actions">
+                <button data-action="wind">
+                    <!-- SVG gets inserted here -->
+                    Build Wind Farm
+                    <span class="action-cost">Cost: £100m</span>
+                </button>
+                <button data-action="fishing">
+                    <!-- SVG gets inserted here -->
+                    Lease for Fishing
+                    <span class="action-cost">Cost: £20m</span>
+                </button>
+                <button data-action="conservation">
+                    <!-- SVG gets inserted here -->
+                    Create Marine Reserve
+                    <span class="action-cost">Cost: £50m</span>
+                </button>
+                <button data-action="clear">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    Clear Zone
+                    <span class="action-cost">Cost: £10m</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- GAME CONFIGURATION ---
+            const GRID_SIZE = 12;
+            const INITIAL_STATE = {
+                income: 500, // in millions
+                biodiversity: 50, // 0-100
+                sustainability: 50, // 0-100
+                year: 2024,
+            };
+
+            const COSTS = {
+                wind: 100,
+                fishing: 20,
+                conservation: 50,
+                clear: 10
+            };
+
+            const YEARLY_IMPACTS = {
+                wind:         { income: 25, biodiversity: -2, sustainability: 5 },
+                fishing:      { income: 10, biodiversity: -5, sustainability: -3 },
+                conservation: { income: -5, biodiversity:  8, sustainability: 2 },
+                empty:        { income:  0, biodiversity:  1, sustainability: 1 }, // Empty zones recover slowly
+            };
+            
+            // --- SVG ICONS ---
+            const ICONS = {
+                wind: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="fill: var(--tce-deep-blue);"><path d="M50 55 L 50 100 M 45 100 H 55 M 50 55 C 75 52 85 30 50 30 S 25 52 50 55z M 50 55 C 53 80 75 90 75 55 S 53 30 50 55z M 50 55 C 47 80 25 90 25 55 S 47 30 50 55z" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke="var(--tce-deep-blue)" fill="rgba(255,255,255,0.7)"></path></svg>`,
+                fishing: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="fill: var(--tce-deep-blue);"><path d="M 85,50 C 85,30 65,25 50,25 C 35,25 15,30 15,50 C 15,70 35,75 50,75 C 65,75 85,70 85,50 Z M 85,50 L 95,45 L 95,55 L 85,50 M 25,45 A 5 5 0 1 0 25 55 A 5 5 0 1 0 25 45" stroke-width="4" stroke="var(--tce-deep-blue)" fill="var(--tce-bright-blue)"></path></svg>`,
+                conservation: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 90 V 40 C 20 20 40 20 40 40 V 90 M 40 50 C 50 50 50 60 60 60 M 60 90 V 30 C 60 10 80 10 80 30 V 90" stroke-width="8" stroke="var(--tce-green)" fill="none" stroke-linecap="round"></path><circle cx="60" cy="40" r="5" fill="var(--tce-bright-blue)"/></svg>`
+            };
+            
+            // --- DOM ELEMENTS ---
+            const grid = document.getElementById('seabed-grid');
+            const incomeDisplay = document.getElementById('income-display');
+            const bioBarFill = document.querySelector('#biodiversity-bar .bar-fill');
+            const sustBarFill = document.querySelector('#sustainability-bar .bar-fill');
+            const nextYearBtn = document.getElementById('next-year-btn');
+            const modal = document.getElementById('action-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const modalActions = document.querySelector('.modal-actions');
+
+            // --- GAME STATE ---
+            let state = { ...INITIAL_STATE };
+            let zones = [];
+            let currentZoneId = null;
+
+            // --- FUNCTIONS ---
+            function init() {
+                // Populate modal buttons with SVGs
+                modalActions.querySelector('[data-action="wind"]').insertAdjacentHTML('afterbegin', ICONS.wind);
+                modalActions.querySelector('[data-action="fishing"]').insertAdjacentHTML('afterbegin', ICONS.fishing);
+                modalActions.querySelector('[data-action="conservation"]').insertAdjacentHTML('afterbegin', ICONS.conservation);
+                
+                // Create zones
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    const zoneEl = document.createElement('div');
+                    zoneEl.classList.add('zone');
+                    zoneEl.dataset.id = i;
+                    grid.appendChild(zoneEl);
+                    zones.push({ id: i, state: 'empty', element: zoneEl });
+                }
+                
+                addEventListeners();
+                updateHUD();
+            }
+
+            function updateHUD() {
+                incomeDisplay.textContent = `£${state.income.toLocaleString()}m`;
+                bioBarFill.style.width = `${state.biodiversity}%`;
+                sustBarFill.style.width = `${state.sustainability}%`;
+                nextYearBtn.textContent = `Advance to ${state.year + 1}`;
+                
+                // Add color feedback
+                incomeDisplay.style.color = state.income < 0 ? '#D9455F' : 'var(--tce-deep-blue)';
+            }
+
+            function addEventListeners() {
+                grid.addEventListener('click', handleZoneClick);
+                nextYearBtn.addEventListener('click', advanceYear);
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal || e.target === closeModalBtn) {
+                        hideModal();
+                    }
+                });
+                closeModalBtn.addEventListener('click', hideModal);
+                modalActions.addEventListener('click', handleActionClick);
+            }
+
+            function handleZoneClick(e) {
+                if (e.target.classList.contains('zone')) {
+                    currentZoneId = parseInt(e.target.dataset.id, 10);
+                    modalTitle.textContent = `Manage Seabed Zone ${currentZoneId + 1}`;
+                    showModal();
+                }
+            }
+            
+            function handleActionClick(e) {
+                const button = e.target.closest('button[data-action]');
+                if (!button) return;
+                
+                const action = button.dataset.action;
+                const cost = COSTS[action];
+                
+                if (state.income < cost) {
+                    alert("Insufficient funds for this action.");
+                    return;
+                }
+
+                state.income -= cost;
+                
+                const zone = zones[currentZoneId];
+                zone.state = action === 'clear' ? 'empty' : action;
+
+                renderZone(zone);
+                hideModal();
+                updateHUD();
+            }
+
+            function showModal() {
+                modal.classList.add('visible');
+            }
+
+            function hideModal() {
+                modal.classList.remove('visible');
+                currentZoneId = null;
+            }
+            
+            function renderZone(zone) {
+                zone.element.innerHTML = '';
+                zone.element.className = 'zone'; // Reset classes
+                if (zone.state !== 'empty') {
+                    zone.element.innerHTML = ICONS[zone.state];
+                    zone.element.classList.add(zone.state);
+                }
+            }
+
+            function advanceYear() {
+                let incomeChange = 0;
+                let bioChange = 0;
+                let sustChange = 0;
+
+                zones.forEach(zone => {
+                    const impact = YEARLY_IMPACTS[zone.state];
+                    incomeChange += impact.income;
+                    bioChange += impact.biodiversity;
+                    sustChange += impact.sustainability;
+                });
+                
+                state.year++;
+                state.income += incomeChange;
+                state.biodiversity = Math.max(0, Math.min(100, state.biodiversity + bioChange));
+                state.sustainability = Math.max(0, Math.min(100, state.sustainability + sustChange));
+                
+                updateHUD();
+                
+                if (state.biodiversity <= 0 || state.sustainability <= 0) {
+                    alert(`Year ${state.year}: Critical environmental collapse! The seabed ecosystem is failing. The programme is under review.`);
+                }
+                if (state.income < -200) {
+                     alert(`Year ${state.year}: Severe deficit! The Treasury has halted all funding. The programme is under review.`);
+                }
+            }
+
+            // --- START GAME ---
+            init();
+        });
+    </script>
+
+</body>
+</html>
